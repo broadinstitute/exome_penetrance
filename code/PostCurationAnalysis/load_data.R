@@ -3,6 +3,9 @@ library(reshape2)
 library(plyr)
 library(dplyr)
 
+
+select <- dplyr::select
+
 source("../code/config.R")
 load_data <- function(data_source, age_cutoff, keep_ascertained=FALSE){
   if(data_source == "52k"){
@@ -520,18 +523,3 @@ ukbb_filter_carrier_list_AB_DP_GQ <- function(carrier_list, carrier_list_qual_in
     filter(V7=="False")
     return(carrier_list_join_qual)
 }
-
-carrier_list <- read.delim("../output/GetCarrierLists/ukbb_regeneron/clinvar_carriers_before_AB_GQ_DP_filter.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE)
-carrier_list_qual_info <- read.delim("../output/GetCarrierLists/ukbb_regeneron/ukbb_regeneron_clinvar_carriers_tabix_results_clean.txt", sep = "\t", header=FALSE, stringsAsFactors = FALSE)
-carrier_list_join_qual <- ukbb_filter_carrier_list_AB_DP_GQ(carrier_list, carrier_list_qual_info)
-carrier_list_join_qual %>% write_delim("../output/GetCarrierLists/ukbb_regeneron/clinvar_carrier.txt",delim="\t")
-
-carrier_list <- read.delim("../output/GetCarrierLists/ukbb_regeneron/lof_carriers_before_AB_GQ_DP_filter.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE)
-carrier_list_qual_info <- read.delim("../output/GetCarrierLists/ukbb_regeneron/ukbb_regeneron_lof_carriers_tabix_results_clean.txt", sep = "\t", header=FALSE, stringsAsFactors = FALSE)
-carrier_list_join_qual <- ukbb_filter_carrier_list_AB_DP_GQ(carrier_list, carrier_list_qual_info)
-carrier_list_join_qual %>% write_delim("../output/GetCarrierLists/ukbb_regeneron/lof_carrier.txt",delim="\t")
-
-carrier_list <- read.delim("../output/GetCarrierLists/ukbb_regeneron/radiant_carriers_before_AB_GQ_DP_filter.txt", sep="\t", header=TRUE, stringsAsFactors = FALSE)
-carrier_list_qual_info <- read.delim("../output/GetCarrierLists/ukbb_regeneron/ukbb_regeneron_radiant_carriers_tabix_results_clean.txt", sep = "\t", header=FALSE, stringsAsFactors = FALSE)
-carrier_list_join_qual <- ukbb_filter_carrier_list_AB_DP_GQ(carrier_list, carrier_list_qual_info)
-carrier_list_join_qual %>% write_delim("../output/GetCarrierLists/ukbb_regeneron/radiant_carrier.txt",delim="\t")
