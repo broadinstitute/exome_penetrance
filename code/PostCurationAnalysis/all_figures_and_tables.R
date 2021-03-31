@@ -22,8 +22,8 @@ age_cutoff <- 40
 ### Load all data
 ###
 
-source("../code/PostCurationAnalysis/Load_dataBoth.R")
-source("../code/PostCurationAnalysis/plotting.R")
+source("../code/PostCurationAnalysis/load_data.R")
+source("../code/PostCurationAnalysis/utils.R")
 all_data <- load_both_datasets(age_cutoff)
 joint_data <- all_data$joint_data
 AD_gene_list <- all_data$AD_gene_list
