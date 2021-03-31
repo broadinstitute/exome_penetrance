@@ -1,0 +1,10 @@
+submitter	Number of submissions	Last evaluation date
+Invitae	133570	2018-09-18
+GeneDx	101493	2019-02-08
+Ambry Genetics	50960	2018-07-26
+EGL Genetic Diagnostics,Eurofins Clinical Diagnostics	46417	2018-09-18
+Laboratory for Molecular Medicine,Partners HealthCare Personalized Medicine	22095	2018-03-07
+Counsyl	19872	2018-06-13
+PreventionGenetics,PreventionGenetics	18261	2018-10-26
+Laboratory of Genetics and Genomics,Cincinnati Children's Hospital Medical Center	17733	2017-01-31
+Genetic Services Laboratory, University of Chicago	15333	2018-01-17
