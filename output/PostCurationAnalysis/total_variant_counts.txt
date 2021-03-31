@@ -1,0 +1,4 @@
+data_source1	Data set	Number of curated ClinVar and Review variants	Number of curated predicted LoF variants	Total number of curated variants	Number of P/LP ClinVar and Review variants	Number of likely LoF variants	Total number of likely pathogenic variants
+AMP-T2D-GENES	AMP-T2D-GENES	75	85	146	212	117	312
+UKBB	UKBB	56	87	130	159	121	263
+Both	Both	103	159	238	276	218	463
