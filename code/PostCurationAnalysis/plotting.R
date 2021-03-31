@@ -67,9 +67,7 @@ penetrance_table <- function(data,
                              levels_to_plot=path_levels,
                              stratify_vus = FALSE,
                              by_gene = FALSE){
-  pheno <- data$pheno
-  full_carrier_list <- data$full_carrier_list
-  
+
   all_threshold_results <- NULL
   
   if(include_mody){
@@ -399,20 +397,20 @@ carrier_phenotypes_mean_ci_pvalues <- function(data,
   }
   if(!by_gene){
     all_means <- all_means %>%
-      pivot_wider(names_from = c("Carrier"),values_from=c("Mean (95% CI)"),names_prefix="Mean (95% CI) ") %>%  #,values_from=c("Mean (95% CI)","P value","Beta (se)")) %>%
+      pivot_wider(names_from = "Carrier", values_from= "Mean (95% CI)", names_prefix="Mean (95% CI) ") %>%  #,values_from=c("Mean (95% CI)","P value","Beta (se)")) %>%
       left_join(p_values,by=join_by) %>%
       select(-OR) %>%
-      pivot_wider(names_from = c("data_source"),values_from=c("Mean (95% CI) Carrier","Mean (95% CI) Non Carrier",
-                                                              "P value",
-                                                              "Beta (se)"))#,names_prefix="Mean (95% CI)")
+      pivot_wider(names_from = "data_source", values_from=c("Mean (95% CI) Carrier", "Mean (95% CI) Non Carrier",
+                                                            "P value",
+                                                            "Beta (se)"))#,names_prefix="Mean (95% CI)")
   }
   else{
     all_means <- all_means %>%
       left_join(p_values,by=join_by) %>% 
       select(-OR) %>%
-      pivot_wider(names_from = c("data_source"),values_from=c("Mean (95% CI)",
-                                                              "P value",
-                                                              "Beta (se)"))
+      pivot_wider(names_from = "data_source", values_from=c("Mean (95% CI)",
+                                                            "P value",
+                                                            "Beta (se)"))
   }
   return(all_means)
 }
@@ -596,7 +594,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=TRUE,
   length1 <- function (x, value) {
     length(which(x==value))
   }
-  measurevar_param <- enquo(measurevar)
+
   # This does the summary. For each group's data frame, return a vector with
   # N, mean, and sd
   if(binomial){
@@ -681,7 +679,6 @@ PRS_plots_one_condition <- function(my_data,
                                     prs_label,
                                     trait_label,
                                     trait_label2,
-                                    p_values=NULL,
                                     restrict_lipid_meds = FALSE,
                                     threshold_under = FALSE,
                                     log_breaks = NULL,
@@ -744,16 +741,8 @@ PRS_plots_one_condition <- function(my_data,
   carrier_subset_phenotype_value <- carrier_subset_phenotype_value %>% mutate(Carrier_and_prs_quantile = paste(Carrier, quantile))
 
   top_1_per <- carrier_subset_phenotype_value %>% filter(percentile == 100 | Carrier == "Carrier")
-  non_top_1_per <- carrier_subset_phenotype_value %>% filter(percentile < 100 | Carrier == "Carrier")
   interquartile <- carrier_subset_phenotype_value %>% mutate(grouping=ifelse((quantile == 2) | (quantile == 3), 'interquartile', 'outer')) %>% mutate(grouping=ifelse(percentile == 100, 'top_1', grouping)) %>% filter((quantile == 2) | (quantile == 3) | (percentile == 100)) %>% filter(Carrier != "Carrier")
-  top_1_per_vs_99 <- carrier_subset_phenotype_value %>% filter(!is.na(percentile)) %>% mutate(grouping=ifelse(percentile < 100, 'top_1_per', 'non_top_1')) %>% filter(Carrier != "Carrier")
-  glm_interquartile_1_per_pvalues <- NULL #data.frame(Condition=character(),
-                                          #     Gene=character(), 
-                                           #    `Top 1% of gePS vs Interquartile range (25-75%) estimate`=double(), 
-                                            #   `Top 1% of gePS vs Interquartile range (25-75%) pval`=double(), 
-                                             #  `Monogenic carriers vs Top 1% gePS estimate`=double(), 
-                                              # `Monogenic carriers vs Top 1% gePS	pval`=double(), 
-                                               #stringsAsFactors=FALSE) 
+  glm_interquartile_1_per_pvalues <- NULL
   if(trait == "MODY"){
     fit <- glm(phenotype_value~Carrier+age+SEX+PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8+PC9+PC10, data=top_1_per, family=binomial)
     top_1_per_p <- coef(summary(fit))[2, c(1, 4)]
@@ -783,16 +772,16 @@ PRS_plots_one_condition <- function(my_data,
   }
   if(trait=="MODY"){
     df2 <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                     groupvars=c("percentile"),
+                     groupvars= "percentile",
                       binomial=TRUE)
     df4 <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                     groupvars=c("forty"),
+                     groupvars= "forty",
                      binomial=TRUE)
   }else{
     df2 <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                     groupvars=c("percentile"))
+                     groupvars= "percentile")
     df4 <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                     groupvars=c("forty"))
+                     groupvars= "forty")
   }
   
   if(by_gene){
@@ -804,11 +793,11 @@ PRS_plots_one_condition <- function(my_data,
     }
     if(trait=="MODY"){
       one_mean <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                          groupvars=c("Gene"),
+                          groupvars= "Gene",
                           binomial=TRUE)
     }else{
       one_mean <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                            groupvars=c("Gene"))
+                            groupvars= "Gene")
     }
 
     one_mean <- one_mean %>%
@@ -819,12 +808,12 @@ PRS_plots_one_condition <- function(my_data,
   }else{
     if(trait=="MODY"){
       one_mean <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                            groupvars=c("Carrier"),
+                            groupvars= "Carrier",
                             binomial=TRUE)
       head(one_mean)
     }else{
       one_mean <- summarySE(carrier_subset_phenotype_value, measurevar="phenotype_value", 
-                       groupvars=c("Carrier"))
+                       groupvars= "Carrier")
     }
     one_mean <- one_mean %>%
       mutate(percentile = "C")  %>% 
@@ -834,7 +823,7 @@ PRS_plots_one_condition <- function(my_data,
   df2$color = "gePS percentile"
   df2 <- rbind(df2, one_mean %>% select(-Carrier))
   df4$color = "gePS percentile"
-  p_percentile <- ggplot(na.omit(df2 %>% filter(color != "Carrier")), aes(x=factor(percentile, levels = c(seq(1, 100))), y=phenotype_value, color=color)) +
+  p_percentile <- ggplot(na.omit(df2 %>% filter(color != "Carrier")), aes(x=factor(percentile, levels = seq(1, 100)), y=phenotype_value, color=color)) +
     geom_point(size=2, position=position_dodge(.4))+
     xlab(paste0(prs_label, " percentile\n")) +
     ylab(trait_label) + 
@@ -874,7 +863,7 @@ PRS_plots_one_condition <- function(my_data,
       theme(axis.text.x =element_blank(),
           axis.ticks.x = element_blank())
   }
-  p_percentile_non_carrier <- ggplot(na.omit(df4 %>% filter(color != "Carrier")), aes(x=factor(forty, levels = c(seq(1, 40))), y=phenotype_value, color=color)) +
+  p_percentile_non_carrier <- ggplot(na.omit(df4 %>% filter(color != "Carrier")), aes(x=factor(forty, levels = seq(1, 40)), y=phenotype_value, color=color)) +
     geom_point(size=3, position=position_dodge(.4))+
     xlab(paste0(prs_label, " gePS grouping\n")) +
     ylab(trait_label) + 
@@ -888,7 +877,7 @@ PRS_plots_one_condition <- function(my_data,
     scale_colour_manual(values=c("gePS percentile"="black","Carrier"="#d6604d")) +
     theme(legend.position="none")
   
-  p_percentile_non_carrier_no_bars <- ggplot(na.omit(df4 %>% filter(color != "Carrier")), aes(x=factor(forty, levels = c(seq(1, 40))), y=phenotype_value, color=color)) +
+  p_percentile_non_carrier_no_bars <- ggplot(na.omit(df4 %>% filter(color != "Carrier")), aes(x=factor(forty, levels = seq(1, 40)), y=phenotype_value, color=color)) +
     geom_point(size=3, position=position_dodge(.4))+
     xlab(paste0(prs_label, " gePS grouping\n")) +
     ylab(trait_label) + 
@@ -958,7 +947,7 @@ PRS_plots <- function(data, age_cutoff=NULL){
   low_ldl_p <- PRS_plots_one_condition(data,
                                        get_PRS_path("ldl_mgdl"),
                                        "ldl_mgdl", "Low LDL",
-                                       threshold_for_plot$threshold[which(threshold_for_plot$Trait=="Low LDL")],
+                                       threshold=threshold_for_plot$threshold[which(threshold_for_plot$Trait=="Low LDL")],
                                        "UKBB LDL gePS", "Mean LDL (mg/dL)", "LDL (mg/dL)", threshold_under = TRUE,
                                        age_cutoff = age_cutoff)
   high_ldl_p <- PRS_plots_one_condition(data,
@@ -1052,9 +1041,6 @@ PRS_plots <- function(data, age_cutoff=NULL){
                   rel_heights = c(1,1,1,1,1,2.2),
                   labels = c("A - Low LDL", "B - High LDL", "C - High HDL", "D - High TG", "E - Obesity","F - Diabetes"),
                   label_x = 0.01, label_y = 0.9, hjust = -0.1, vjust = -0.1)
-  
-  p1_supp <- prow6
-
   
   prow1 <- plot_grid(low_ldl_p$p_ecdf + theme(legend.position="none"),
                      high_ldl_p$p_ecdf + theme(legend.position="none"),
@@ -1405,7 +1391,7 @@ formatted_penetrance <- function(all_penetrance, p_values, by_gene=FALSE, carrie
   if(by_gene){
     all_penetrance_format <- all_penetrance_format %>%
       left_join(p_values_subset,by=join_by) %>%
-      pivot_wider(names_from = c("data_source"),values_from=c("count","total","prop","Beta (se)","P value","OR")) %>%
+      pivot_wider(names_from = "data_source", values_from=c("count", "total", "prop", "Beta (se)", "P value", "OR")) %>%
       mutate("Restricted no lipid medications" = ifelse(lipidmeds,"Yes","")) %>%
       rename(Condition=condition) %>%
     select("Condition","Gene","total_AMP-T2D-GENES", "prop_AMP-T2D-GENES","Beta (se)_AMP-T2D-GENES","P value_AMP-T2D-GENES","OR_AMP-T2D-GENES",
@@ -1413,9 +1399,9 @@ formatted_penetrance <- function(all_penetrance, p_values, by_gene=FALSE, carrie
     print(all_penetrance_format$`P value_UKBB`)
   }else{
     all_penetrance_format <- all_penetrance_format %>%
-      pivot_wider(names_from = c("Carrier"),values_from=c("count","total","prop")) %>% 
+      pivot_wider(names_from = "Carrier", values_from=c("count", "total", "prop")) %>%
       left_join(p_values_subset,by=join_by) %>%
-      pivot_wider(names_from = c("data_source"),values_from=c("count_Carrier","count_Non Carrier","total_Carrier","total_Non Carrier","prop_Carrier","prop_Non Carrier","Beta (se)","P value","OR")) %>%
+      pivot_wider(names_from = "data_source", values_from=c("count_Carrier", "count_Non Carrier", "total_Carrier", "total_Non Carrier", "prop_Carrier", "prop_Non Carrier", "Beta (se)", "P value", "OR")) %>%
       mutate("Restricted no lipid medications" = ifelse(lipidmeds,"Yes","")) %>%
       rename(Condition=condition) %>%
       select("Condition","Restricted no lipid medications","total_Non Carrier_AMP-T2D-GENES","count_Non Carrier_AMP-T2D-GENES", "prop_Non Carrier_AMP-T2D-GENES",
@@ -1666,7 +1652,7 @@ participant_characteristics <- function(data){
   ancestry <- as.data.frame(data %>% group_by(grouping) %>% count(Ancestry) %>% dcast(grouping ~ Ancestry, value.var = "n") %>% t() %>% row_to_names(row_number = 1)) %>% rownames_to_column()
   
   
-  all_data = sex %>% rbind(means_sds) %>% rbind(ancestry)
+  all_data <- sex %>% rbind(means_sds) %>% rbind(ancestry)
   
   return(list(sex=sex, means_sds=means_sds, ancestry=ancestry, all = all_data))
 }
@@ -1681,7 +1667,7 @@ ascertainment_plots <- function(all_data){
   # Get means for individuals acertained on High LDL cholesterol and individuals not ascertained on High LDL cholesterol
   # and a comparison of those means
   pheno_sub <- pheno %>%
-    mutate(in_excluded_esp_cohort=esp_phenotype %in% c("LDL_High")) %>% 
+    mutate(in_excluded_esp_cohort=esp_phenotype %in% "LDL_High") %>%
     filter(!(esp_phenotype %in% c("BMI_High","BMI_High_Nondiab","BMI_High_diab","BMI_Low","LDL_Low"))) %>%
     select(age, sex, C1, C2, C3, C4, C5,C6,C7,C8,C9,C10,combined_id,Trait,in_excluded_esp_cohort, ldl_mgdl, ldl_mgdl_adj, bmi, esp_phenotype,lipidmeds) %>%
     filter(!is.na(ldl_mgdl)) %>%
@@ -1701,7 +1687,7 @@ ascertainment_plots <- function(all_data){
   
   
   pheno_sub <- pheno %>%
-    mutate(in_excluded_esp_cohort=esp_phenotype %in% c("LDL_Low")) %>%
+    mutate(in_excluded_esp_cohort=esp_phenotype %in% "LDL_Low") %>%
     filter(!(esp_phenotype %in% c("BMI_High","BMI_High_Nondiab","BMI_High_diab","BMI_Low","LDL_High"))) %>% 
     select(age, sex, C1, C2, C3, C4, C5,C6,C7,C8,C9,C10,combined_id,Trait,in_excluded_esp_cohort, ldl_mgdl, ldl_mgdl_adj, bmi, esp_phenotype,lipidmeds) %>%
     filter(!is.na(ldl_mgdl)) %>%
@@ -1722,7 +1708,7 @@ ascertainment_plots <- function(all_data){
   
   
   pheno <- all_data$pheno_annotate_carrier_more_severe %>%
-    mutate(in_excluded_esp_cohort=esp_phenotype %in% c("LDL_High")) %>% 
+    mutate(in_excluded_esp_cohort=esp_phenotype %in% "LDL_High") %>%
     filter(!(esp_phenotype %in% c("BMI_High","BMI_High_Nondiab","BMI_High_diab","BMI_Low","LDL_Low")))
   pheno <- pheno %>% inner_join(epacts_unrelated %>% select(-t2d), by=c("combined_id"="IID"))
   pheno_sub <- pheno %>%
@@ -1848,8 +1834,8 @@ ascertainment_plots <- function(all_data){
                         labels=c("No","Yes"))
   
   
-  pheno <- all_data$pheno_annotate_carrier_more_severe %>% mutate(in_excluded_esp_cohort=esp_phenotype %in% c("LDL_Low")) %>% filter(!(esp_phenotype %in% c("BMI_High", "BMI_High_Nondiab", "BMI_High_diab", "BMI_Low", "LDL_High")))
-  pheno <- pheno %>% filter(Trait %in% c("Low LDL"))
+  pheno <- all_data$pheno_annotate_carrier_more_severe %>% mutate(in_excluded_esp_cohort=esp_phenotype %in% "LDL_Low") %>% filter(!(esp_phenotype %in% c("BMI_High", "BMI_High_Nondiab", "BMI_High_diab", "BMI_Low", "LDL_High")))
+  pheno <- pheno %>% filter(Trait %in% "Low LDL")
 
   pheno <- pheno %>% inner_join(epacts_unrelated %>% select(-t2d), by=c("combined_id"="IID"))
   pheno_sub <- pheno %>% filter(Trait == "Low LDL") %>% select(age, sex, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, combined_id, Trait, in_excluded_esp_cohort, ldl_mgdl, ldl_mgdl_adj, bmi, esp_phenotype, lipidmeds, Variant) %>% filter(!is.na(ldl_mgdl)) %>% distinct()
