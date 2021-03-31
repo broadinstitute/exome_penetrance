@@ -81,5 +81,3 @@ colnames(exome_samples) <- c("s", "project", "sample", "is_forbidden")
 ### Write out file
 ###
 write.table(exome_samples,"../data/samples_to_keep_new_phenotype_file_V5.txt",quote = F,sep = "\t",row.names=F)
-
-write_google_tsv(exome_samples, "gs://gnomad-zach/data/gnomad52k/samples_to_keep_new_phenotype_file_V5.txt")
