@@ -4,7 +4,7 @@ write_google_tsv <- function(.x, remote_path) {
     local_path <- tempfile()
     try({
         write_tsv(.x, local_path)
-        system(paste0("/Users/jgoodric/google-cloud-sdk/bin/gsutil cp ", local_path, " ", remote_path))
+        system(paste0("gsutil cp ", local_path, " ", remote_path))
     })
     unlink(local_path)
 }
@@ -12,7 +12,7 @@ write_google_tsv <- function(.x, remote_path) {
 read_google_tsv <- function(remote_path, ...) {
     local_path <- paste0(tempfile(), ".", tools::file_ext(remote_path))
     try({
-        system(paste0("/Users/jgoodric/google-cloud-sdk/bin/gsutil cp ", remote_path, " ", local_path))
+        system(paste0("gsutil cp ", remote_path, " ", local_path))
     })
     .x <- read_tsv(local_path, ...)
     unlink(local_path)
@@ -106,7 +106,7 @@ get_data_path <- function(data_source, data_type) {
 }
 
 
-
+# These files can't be shared so have not been committed to GitHub
 get_phenotype_path <- function(data_source, filtered = TRUE) {
     if (data_source == "52k") {
         if (filtered) {
@@ -123,7 +123,7 @@ get_phenotype_path <- function(data_source, filtered = TRUE) {
     }
 }
 
-
+# These files can't be shared so have not been committed to GitHub
 get_related_exclude_path <- function(data_source, exclude = TRUE) {
     if (data_source == "52k") {
         if (exclude) {
@@ -135,7 +135,7 @@ get_related_exclude_path <- function(data_source, exclude = TRUE) {
 }
 
 
-
+# These files can't be shared so have not been committed to GitHub
 forbidden_52k_samples_fp <- "../data/forbidden_samples.txt"
 exome_52k_samples_fp <- "../data/sample_ids.txt"
 
@@ -163,7 +163,7 @@ write_google_tsv <- function(.x, remote_path) {
     local_path <- tempfile()
     try({
         write_tsv(.x, local_path)
-        system(paste0("/Users/jgoodric/google-cloud-sdk/bin/gsutil cp ", local_path, " ", remote_path))
+        system(paste0("gsutil cp ", local_path, " ", remote_path))
     })
     unlink(local_path)
 }
@@ -171,7 +171,7 @@ write_google_tsv <- function(.x, remote_path) {
 read_google_tsv <- function(remote_path, ...) {
     local_path <- paste0(tempfile(), ".", tools::file_ext(remote_path))
     try({
-        system(paste0("/Users/jgoodric/google-cloud-sdk/bin/gsutil cp ", remote_path, " ", local_path))
+        system(paste0("gsutil cp ", remote_path, " ", local_path))
     })
     .x <- read_tsv(local_path, ...)
     unlink(local_path)
